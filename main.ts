@@ -23,15 +23,15 @@ Deno.serve(async (req) => {
   // 仅处理路径以 /proxy 开头的请求
   if (url.pathname.startsWith("/proxy")) {
     // 从 KV 中获取目标 URL
-    const result = await kv.get(TARGET_KEY);
-    if (!result.value) {
-      return new Response(
-          "未设置代理目标 URL，请使用 ?setUrl=你的目标URL 进行设置。",
-          { status: 400 }
-      );
-    }
-    const baseUrl = result.value as string;
-
+    // const result = await kv.get(TARGET_KEY);
+    // if (!result.value) {
+    //   return new Response(
+    //       "未设置代理目标 URL，请使用 ?setUrl=你的目标URL 进行设置。",
+    //       { status: 400 }
+    //   );
+    // }
+    // const baseUrl = result.value as string;
+    const baseUrl = '';
     // 去掉 /proxy 前缀，剩余部分作为相对路径
     const proxyPath = url.pathname.slice("/proxy".length);
     // 构造最终的请求 URL：以存储的 baseUrl 为基准，加上剩余路径和原有查询参数（注意：此处不包括 setUrl 参数，因为已单独处理）
@@ -75,6 +75,6 @@ Deno.serve(async (req) => {
   return new Response(
       "欢迎使用 Deno Proxy：\n" +
       "1. 使用 /proxy 开头的路径发起代理请求。\n" +
-      "2. 使用 ?setUrl=你的目标URL 设置代理目标。"
+      "2. 示例：https://demo.com/proxy/https://download-cdn.jetbrains.com/toolbox/jetbrains-toolbox-2.6.3.43718.exe
   );
 });
