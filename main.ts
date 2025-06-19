@@ -1,33 +1,29 @@
 
-// 打开 Deno KV（全局只需打开一次）
-const kv = await Deno.openKv();
-// 使用一个固定的 key 来存储目标 URL
-const TARGET_KEY = ["targetUrl"];
-
 Deno.serve(async (req) => {
-  const url = new URL(req.url);
-
-  // 如果请求带有 setUrl 参数，则更新目标 URL
-  if (url.searchParams.has("setUrl")) {
-    const newTargetUrl = url.searchParams.get("setUrl")!;
-    // 基本校验一下 URL 格式
-    try {
-      new URL(newTargetUrl);
-    } catch {
-      return new Response("无效的 URL，请检查格式。", { status: 400 });
-    }
-    await kv.set(TARGET_KEY, newTargetUrl);
-    return new Response(`代理目标 URL 已更新为：${newTargetUrl}`);
+    // 1. 解析收到的请求 URL
+  const incomingUrl = new URL(req.url);
+  // 2. 从路径中提取目标 URL 的主体部分
+  // .pathname => /https://api.example.com/data?id=123...
+  // .slice(1) => https://api.example.com/data?id=123...
+  const pathPart = incomingUrl.pathname.slice(1);
+  // 3. 获取原始请求中的查询字符串部分
+  const searchPart = incomingUrl.search; // => ?id=123&type=user
+  // 4. 将两部分拼接成最终的目标 URL
+  const targetUrlString = pathPart + searchPart;
+  // 5. 验证 URL 是否有效
+  if (!pathPart) { // 如果路径为空 (例如只访问了 http://localhost:8000/)
+    return new Response(
+      "使用方法：在地址后面加上你想要代理的目标 URL。\n例如: http://localhost:8000/https://example.com",
+      { status: 400 }
+    );
   }
 
-  // 仅处理路径以 /proxy 开头的请求
-  if (url.pathname.startsWith("/proxy")) {
     // 构造最终的请求 URL：原有查询参数（注意：此处不包括 setUrl 参数，因为已单独处理）
     let finalUrl: string;
     try {
-      finalUrl = url.search;
+      finalUrl = new URL(targetUrlString).toString();
     } catch {
-      return new Response("构造目标 URL 出错。"+url.search, { status: 500 });
+    return new Response(`错误：提供的目标 URL 无效。\n收到的 URL: ${targetUrlString}`, { status: 400 });
     }
 
     // 构造一个新的请求，将客户端的 method、headers 和 body 传递过去
@@ -57,12 +53,4 @@ Deno.serve(async (req) => {
         status: 500,
       });
     }
-  }
-
-  // 其他请求返回提示信息
-  return new Response(
-      "欢迎使用 Deno Proxy：\n" +
-      "1. 使用 /proxy 开头的路径发起代理请求。\n" +
-      "2. 示例：https://demo.com/proxy/https://download-cdn.jetbrains.com/toolbox/jetbrains-toolbox-2.6.3.43718.exe"
-  );
 });
