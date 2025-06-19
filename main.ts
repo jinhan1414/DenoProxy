@@ -75,6 +75,6 @@ Deno.serve(async (req) => {
   return new Response(
       "欢迎使用 Deno Proxy：\n" +
       "1. 使用 /proxy 开头的路径发起代理请求。\n" +
-      "2. 示例：https://demo.com/proxy/https://download-cdn.jetbrains.com/toolbox/jetbrains-toolbox-2.6.3.43718.exe
+      "2. 示例：https://demo.com/proxy/https://download-cdn.jetbrains.com/toolbox/jetbrains-toolbox-2.6.3.43718.exe"
   );
 });
