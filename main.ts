@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     // 构造最终的请求 URL：以存储的 baseUrl 为基准，加上剩余路径和原有查询参数（注意：此处不包括 setUrl 参数，因为已单独处理）
     let finalUrl: string;
     try {
-      finalUrl = new URL(proxyPath + url.search, baseUrl).toString();
+      finalUrl = new URL(proxyPath + url.search).toString();
     } catch {
       return new Response("构造目标 URL 出错。", { status: 500 });
     }
