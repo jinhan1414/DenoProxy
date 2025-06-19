@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
     try {
       finalUrl = new URL(targetUrlString).toString();
     } catch {
-    return new Response(`错误：提供的目标 URL 无效。\n收到的 URL: ${targetUrlString}`, { status: 400 });
+    return new Response(`错误：提供的目标 URL 无效。\n收到的 URL: ${targetUrlString} \n使用方法：在地址后面加上你想要代理的目标 URL。\n例如: http://localhost:8000/https://example.com`, { status: 400 });
     }
 
     // 构造一个新的请求，将客户端的 method、headers 和 body 传递过去
