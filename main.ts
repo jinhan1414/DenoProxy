@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
     try {
       finalUrl = new URL(proxyPath + url.search).toString();
     } catch {
-      return new Response("构造目标 URL 出错。", { status: 500 });
+      return new Response("构造目标 URL 出错。"+proxyPath, { status: 500 });
     }
 
     // 构造一个新的请求，将客户端的 method、headers 和 body 传递过去
