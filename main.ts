@@ -22,24 +22,12 @@ Deno.serve(async (req) => {
 
   // 仅处理路径以 /proxy 开头的请求
   if (url.pathname.startsWith("/proxy")) {
-    // 从 KV 中获取目标 URL
-    // const result = await kv.get(TARGET_KEY);
-    // if (!result.value) {
-    //   return new Response(
-    //       "未设置代理目标 URL，请使用 ?setUrl=你的目标URL 进行设置。",
-    //       { status: 400 }
-    //   );
-    // }
-    // const baseUrl = result.value as string;
-    const baseUrl = '';
-    // 去掉 /proxy 前缀，剩余部分作为相对路径
-    const proxyPath = url.pathname.slice("/proxy".length);
-    // 构造最终的请求 URL：以存储的 baseUrl 为基准，加上剩余路径和原有查询参数（注意：此处不包括 setUrl 参数，因为已单独处理）
+    // 构造最终的请求 URL：原有查询参数（注意：此处不包括 setUrl 参数，因为已单独处理）
     let finalUrl: string;
     try {
-      finalUrl = new URL(proxyPath + url.search).toString();
+      finalUrl = url.search;
     } catch {
-      return new Response("构造目标 URL 出错。"+proxyPath, { status: 500 });
+      return new Response("构造目标 URL 出错。"+url.search, { status: 500 });
     }
 
     // 构造一个新的请求，将客户端的 method、headers 和 body 传递过去
